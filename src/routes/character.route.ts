@@ -1,5 +1,4 @@
 import { Router, Request, Response } from 'express';
-import { identityValidator } from '../middlewares/identityValidator';
 import { RickMortyCharacterProvider } from '../providers/character.provider';
 import { CharactersService } from '../services/character.service';
 import { CharacterFilter } from '../models/character.model';
@@ -10,7 +9,6 @@ const service = new CharactersService(provider);
 
 charactersRoutes.get(
   '/random',
-  identityValidator,
   async (req: Request, res: Response) => {
     try {
       const characters = await service.getRandomCharacters(10);
@@ -29,7 +27,6 @@ charactersRoutes.get(
 
 charactersRoutes.get(
   '/search',
-  identityValidator,
   async (req: Request, res: Response) => {
     try {
       const filter = req.query as CharacterFilter;

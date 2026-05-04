@@ -1,22 +1,30 @@
-import { Router, Request, Response } from "express";
-import users from "../data/users.json";
+import { Router } from "express";
+import jwt from "jsonwebtoken";
 
-const authRoutes = Router();
+const router = Router();
 
-authRoutes.post("/login", (req: Request, res: Response) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ message: "Email is required" });
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
   }
 
-  const user = users.find((u) => u.email === email);
-
-  if (!user) {
-    return res.status(401).json({ message: "Invalid email" });
+  if (password !== "123456") {
+    return res.status(401).json({ message: "Invalid credentials" });
   }
 
+  const secret = process.env.JWT_SECRET as string;
+  const expiresIn = process.env.JWT_EXPIRES_IN || "1h";
 
-  return res.status(200).json({ message: "Login successful", user });
+  const token = jwt.sign(
+    { sub: email },
+    secret,
+    { expiresIn } as jwt.SignOptions
+  );
+
+  return res.status(200).json({ accessToken: token });
 });
 
-export default authRoutes;
+export default router;

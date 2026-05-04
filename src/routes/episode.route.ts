@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import { identityValidator } from "../middlewares/identityValidator";
 import { RickMortyEpisodeProvider } from "../providers/episode.provider";
 import { EpisodesService } from "../services/episode.service";
 import { EpisodeFilter } from "../models/episode.model";
@@ -12,7 +11,6 @@ const service = new EpisodesService(provider);
 
 episodeRoutes.get(
   "/search",
-  identityValidator,
   async (req: Request, res: Response) => {
     try {
       const filter = req.query as EpisodeFilter;

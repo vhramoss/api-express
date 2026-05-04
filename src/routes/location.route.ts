@@ -1,5 +1,4 @@
 import { Router, Response, Request } from 'express';
-import { identityValidator } from '../middlewares/identityValidator';
 import { RickMortyLocationProvider } from '../providers/location.provider';
 import { LocationsService } from '../services/location.service';
 import { LocationFilter } from '../models/location.model';
@@ -10,7 +9,6 @@ const service = new LocationsService(provider);
 
 locationRoutes.get(
     '/search',
-    identityValidator,
     async (req: Request, res: Response) => {
         try {
             const filter = req.query as LocationFilter;
