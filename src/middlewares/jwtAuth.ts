@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import users from "../data/users.json";
 
 interface JwtPayload {
   sub: string;
@@ -24,10 +25,18 @@ export function jwtAuth(req: Request, res: Response, next: NextFunction) {
       process.env.JWT_SECRET as string
     ) as JwtPayload;
 
-    // 🔑 Aqui o JWT vira identidade no request
-    req.user = { email: decoded.sub };
+    const email = decoded.sub;
 
-    return next();
+    const user = users.find(
+      (u) => u.email === email && u.active
+    );
+
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized email" });
+    }
+
+    req.user = { email };
+    next();
   } catch {
     return res.status(401).json({ message: "Invalid or expired token" });
   }

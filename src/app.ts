@@ -8,8 +8,8 @@ import { jwtAuth } from './middlewares/jwtAuth';
 const app = express();
 app.use(express.json());
 app.use('/auth', authRoutes);
-app.use('/characters', charactersRoutes, jwtAuth);
-app.use('/locations', locationsRoutes, jwtAuth);
-app.use('/episodes', episodeRoutes, jwtAuth);
+app.use('/characters', jwtAuth, charactersRoutes);
+app.use('/locations', jwtAuth, locationsRoutes);
+app.use('/episodes', jwtAuth, episodeRoutes);
 
 export default app;
