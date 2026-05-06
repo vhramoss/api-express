@@ -1,12 +1,31 @@
 import { useState } from "react";
+import { login } from "../services/authService";
+import { useAuth } from "../contexts/authContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login: authLogin } = useAuth();
 
-  function handleSubmit() {
-    console.log("Email:", email);
-    console.log("Password:", password);
+  async function handleSubmit() {
+    try {
+        const response = await login({
+            email,
+            password,
+        });
+
+        authLogin(response.accessToken);
+
+        console.log("Login bem sucedido!");
+        console.log("Token:", response.accessToken);
+
+    } catch (error) {
+        if (error instanceof Error) {
+            alert(error.message);
+        } else{
+            alert("Ocorreu um erro desconhecido");
+        }
+    }
   }
 
   return (

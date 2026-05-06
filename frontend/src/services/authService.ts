@@ -20,7 +20,14 @@ export async function login(
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (error) {
+    throw new Error("Resposta inválida do servidor");
+  }
 
   if (!response.ok) {
     throw new Error(data.message || "Falha no login");
