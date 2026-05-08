@@ -9,9 +9,7 @@ interface LoginResponse {
   accessToken: string;
 }
 
-export async function login(
-  payload: LoginPayload
-): Promise<LoginResponse> {
+export async function login(payload: LoginPayload): Promise<LoginResponse> {
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
