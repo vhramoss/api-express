@@ -18,4 +18,5 @@ yarn-error.log*
 
 # Repo tool (Android/Google)
 .repo/
+.vscode/
 
