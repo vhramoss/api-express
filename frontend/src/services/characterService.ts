@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/characters";
+const API_URL = "http://localhost:3000/characters";
 
 export interface Character {
   id: number;
@@ -9,9 +9,9 @@ export interface Character {
   image: string;
 }
 
-export async function getCharacters(token: string): Promise<Character[]> {
-  const response = await fetch(`${API_URL}/characters`, {
-    method: "GET",
+export async function getCharacters(token: string, name?: string): Promise<Character[]> {
+  const query = name ? `?name=${encodeURIComponent(name)}` : "";
+  const response = await fetch(`${API_URL}/search${query}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
