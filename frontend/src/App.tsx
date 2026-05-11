@@ -1,22 +1,27 @@
 import Login from "./pages/login";
 import Header from "./components/header";
 import { useAuth } from "./contexts/authContext";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Characters from "./pages/characters";
+import PrivateRoute from "./components/privateRoute";
 
 function App() {
   const { isAuthenticated } = useAuth();
 
-  if (!isAuthenticated) {
-    return <Login />;
-  }
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="p-6">
-        <h1 className="text-xl font-semibold">
-          Usuário autenticado
-        </h1>
-      </div>
-    </div>
+    <BrowserRouter>
+      {isAuthenticated && <Header />}
+      <Routes>
+        <Route path="/login" element={<Login />}/>
+
+        <Route path="/characters" element={
+          <PrivateRoute>
+            <Characters />
+          </PrivateRoute>
+        }/>
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/characters" : "/login"} replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
