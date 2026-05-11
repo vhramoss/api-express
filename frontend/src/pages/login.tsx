@@ -2,12 +2,14 @@ import { useState } from "react";
 import { TextField, Button, Paper, Typography } from "@mui/material";
 import { login } from "../services/authService";
 import { useAuth } from "../contexts/authContext";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { login: authLogin } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit() {
     try {
@@ -20,7 +22,7 @@ function Login() {
 
         authLogin(response.accessToken);
 
-        console.log("Login bem sucedido!");
+        navigate("/characters");
 
 
     } catch (error) {
