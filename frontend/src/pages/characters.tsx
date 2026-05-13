@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Paper,
-  Typography,
-  CircularProgress,
-  TextField,
-} from "@mui/material";
+import { Paper, Typography, CircularProgress, TextField, Snackbar, Alert, Skeleton } from "@mui/material";
 import { getCharacters } from "../services/characterService";
 import type { Character } from "../services/characterService";
 import { useAuth } from "../contexts/authContext";
@@ -18,7 +13,9 @@ function Characters() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
+  
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search);
@@ -48,10 +45,12 @@ function Characters() {
         }
       } catch (err) {
         if (err instanceof Error) {
-          setError(err.message);
+          setError("Servidor indisponível. Tente novamente mais tarde.");
         } else {
           setError("Erro ao buscar personagens");
         }
+        setSnackbarOpen(true);
+
       } finally {
         setLoading(false);
       }
@@ -60,20 +59,19 @@ function Characters() {
     fetchCharacters();
   }, [token, debouncedSearch]);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center p-10">
-        <CircularProgress />
-      </div>
-    );
-  }
 
-  if (error) {
-    return (
-      <Typography className="p-6 text-red-600">
-        {error}
-      </Typography>
+  function CharacterSkeleton() {
+    return(
+      <Paper
+        elevation={3}
+        className="p-4 flex flex-col items-center text-center"
+      >
+        <Skeleton variant="circular" width={128} height={128} />
+        <Skeleton variant="text" width="60%" height={32} />
+        <Skeleton variant="text" width="80%" />
+      </Paper>
     );
+
   }
 
   return (
@@ -88,31 +86,46 @@ function Characters() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {characters.map((character) => (
-          <Paper
-            key={character.id}
-            elevation={3}
-            className="p-4 flex flex-col items-center text-center"
-          >
-            <img
-              src={character.image}
-              alt={character.name}
-              className="w-32 h-32 rounded-full mb-3"
-            />
+        {loading
+          ? Array.from({ length: 8 }).map((_, index) => (
+              <CharacterSkeleton key={index} />
+            ))
+          : characters.map((character) => (
+              <Paper
+                key={character.id}
+                elevation={3}
+                className="p-4 flex flex-col items-center text-center"
+              >
+                {character.image}
 
-            <Typography variant="h6">
-              {character.name}
-            </Typography>
+                <Typography variant="h6">
+                  {character.name}
+                </Typography>
 
-            <Typography
-              variant="body2"
-              className="text-gray-500"
-            >
-              {character.species} — {character.status}
-            </Typography>
-          </Paper>
-        ))}
+                <Typography
+                  variant="body2"
+                  className="text-gray-500"
+                >
+                  {character.species} — {character.status}
+                </Typography>
+              </Paper>
+            ))}
       </div>
+
+      <Snackbar 
+      open={snackbarOpen}
+      autoHideDuration={4000}
+      onClose={() => setSnackbarOpen(false)}
+      anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+      >
+        <Alert
+        severity="error"
+        variant="filled"
+        onClose={() => setSnackbarOpen(false)}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

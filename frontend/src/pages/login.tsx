@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextField, Button, Paper, Typography } from "@mui/material";
+import { TextField, Button, Paper, Typography, Snackbar, Alert } from "@mui/material";
 import { login } from "../services/authService";
 import { useAuth } from "../contexts/authContext";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,8 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { login: authLogin } = useAuth();
   const navigate = useNavigate();
 
@@ -27,10 +29,11 @@ function Login() {
 
     } catch (error) {
         if (error instanceof Error) {
-            alert(error.message);
+            setError("Servidor indisponível. Tente novamente mais tarde.");
         } else{
-            alert("Ocorreu um erro desconhecido");
+            setError("Ocorreu um erro desconhecido");
         }
+        setSnackbarOpen(true);
     } finally {
       setLoading(false);
     }
@@ -79,6 +82,20 @@ function Login() {
           </Button>
         </form>
       </Paper>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          onClose={() => setSnackbarOpen(false)}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
