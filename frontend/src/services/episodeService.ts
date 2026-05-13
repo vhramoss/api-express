@@ -6,7 +6,9 @@ export interface Episode {
   episode: string;
 }
 
-export async function getEpisodes(token: string): Promise<Episode[]> {
+export async function getEpisodes(
+  token: string
+): Promise<Episode[]> {
   const response = await fetch(`${API_URL}/search`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -23,8 +25,21 @@ export async function getEpisodes(token: string): Promise<Episode[]> {
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Erro ao buscar episódios");
+    throw new Error(
+      data.message || "Erro ao buscar episódios"
+    );
   }
 
-  return data.episodes;
+  // ✅ GARANTIA DE CONTRATO
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data.episodes)) {
+    return data.episodes;
+  }
+
+  // ✅ fallback seguro (nunca quebra o map)
+  return [];
 }
+``
