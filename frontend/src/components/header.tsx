@@ -34,17 +34,19 @@ function Header() {
 
                 <NavLink
                     to="/locations"
-                    className="opacity-50 cursor-not-allowed"
-                    onClick={(e) => e.preventDefault()}
-                >
+                    className={({ isActive }) =>
+                        isActive ? "font-bold underline" : "opacity-80"
+                    }
+                    >
                     Locations
                 </NavLink>
 
                 <NavLink
                     to="/episodes"
-                    className="opacity-50 cursor-not-allowed"
-                    onClick={(e) => e.preventDefault()}
-                >
+                    className={({ isActive }) =>
+                        isActive ? "font-bold underline" : "opacity-80"
+                    }
+                    >
                     Episodes
                 </NavLink>
                 </div>
