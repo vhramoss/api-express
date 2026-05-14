@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000/episodes";
+import { API_URL } from "../config/api";
+
+const CHARACTERS_URL = `${API_URL}/episodes`;
 
 export interface Episode {
   id: number;
@@ -6,18 +8,14 @@ export interface Episode {
   episode: string;
 }
 
-export async function getEpisodes(
-  token: string
-): Promise<Episode[]> {
-  const response = await fetch(`${API_URL}/search`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+export async function getEpisodes(): Promise<Episode[]> {
+  const response = await fetch(CHARACTERS_URL, {
+    credentials: "include",
   });
 
   const text = await response.text();
 
-  let data;
+  let data: any;
   try {
     data = JSON.parse(text);
   } catch {
@@ -25,12 +23,16 @@ export async function getEpisodes(
   }
 
   if (!response.ok) {
+
+    if (response.status === 401) {
+      throw new Error("Não autorizado");
+    }
     throw new Error(
       data.message || "Erro ao buscar episódios"
     );
   }
 
-  // ✅ GARANTIA DE CONTRATO
+
   if (Array.isArray(data)) {
     return data;
   }
@@ -39,7 +41,6 @@ export async function getEpisodes(
     return data.episodes;
   }
 
-  // ✅ fallback seguro (nunca quebra o map)
   return [];
 }
 ``

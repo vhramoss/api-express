@@ -6,41 +6,21 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { useAuth } from "../contexts/authContext";
 import { getEpisodes } from "../services/episodeService";
 import type { Episode } from "../services/episodeService";
 
-/**
- * Página Episodes
- *
- * Responsabilidade:
- * - Buscar episódios da API
- * - Exibir lista
- * - Tratar loading (Skeleton)
- * - Tratar erro (Snackbar)
- *
- * Não faz:
- * - Navegação
- * - Autenticação
- * - Lógica de permissão
- */
 function Episodes() {
-  const { token } = useAuth();
 
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // ✅ controla abertura do snackbar
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   useEffect(() => {
     async function fetchEpisodes() {
-      if (!token) return;
-
       try {
         setLoading(true);
-        const data = await getEpisodes(token);
+        const data = await getEpisodes();
         setEpisodes(data);
         setError(null);
       } catch (err) {
@@ -50,7 +30,7 @@ function Episodes() {
           setError("Erro ao buscar episódios");
         }
 
-        // ✅ exibe erro como feedback, sem quebrar a tela
+
         setSnackbarOpen(true);
       } finally {
         setLoading(false);
@@ -58,7 +38,7 @@ function Episodes() {
     }
 
     fetchEpisodes();
-  }, [token]);
+  }, []);
 
   return (
     <div className="p-6">
@@ -66,11 +46,10 @@ function Episodes() {
         Episodes
       </Typography>
 
-      {/* ✅ Grid mantém layout estável */}
+
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading
-          ? // ✅ Skeleton aparece apenas no primeiro load
-            Array.from({ length: 8 }).map((_, index) => (
+          ? Array.from({ length: 8 }).map((_, index) => (
               <Paper
                 key={index}
                 elevation={3}
@@ -100,7 +79,6 @@ function Episodes() {
             ))}
       </div>
 
-      {/* ✅ Snackbar para erro */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}

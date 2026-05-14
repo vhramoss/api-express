@@ -7,16 +7,10 @@ interface JwtPayload {
 }
 
 export function jwtAuth(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies?.access_token;
 
-  if (!authHeader) {
-    return res.status(401).json({ message: "Token not provided" });
-  }
-
-  const [scheme, token] = authHeader.split(" ");
-
-  if (scheme !== "Bearer" || !token) {
-    return res.status(401).json({ message: "Invalid token format" });
+  if (!token) {
+    return res.status(401).json({ message: "Não autorizado" });
   }
 
   try {
@@ -32,12 +26,12 @@ export function jwtAuth(req: Request, res: Response, next: NextFunction) {
     );
 
     if (!user) {
-      return res.status(401).json({ message: "Unauthorized email" });
+      return res.status(401).json({ message: "UUsuário não autorizado" });
     }
 
     req.user = { email };
     next();
   } catch {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    return res.status(401).json({ message: "Token inválido ou expirado" });
   }
 }

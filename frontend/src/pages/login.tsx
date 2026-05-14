@@ -22,14 +22,14 @@ function Login() {
             password,
         });
 
-        authLogin(response.accessToken);
+        authLogin();
 
         navigate("/characters");
 
 
     } catch (error) {
         if (error instanceof Error) {
-            setError("Servidor indisponível. Tente novamente mais tarde.");
+            setError(error.message);
         } else{
             setError("Ocorreu um erro desconhecido");
         }
@@ -40,6 +40,7 @@ function Login() {
   }
 
   return (
+    
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 to-slate-300">
       <Paper elevation={6} className="w-full max-w-md rounded-xl p-8 shadow-xl">
         <Typography variant="h5" className="mb-2 text-center font-semibold">
@@ -97,6 +98,7 @@ function Login() {
         </Alert>
       </Snackbar>
     </div>
+    
   );
 }
 

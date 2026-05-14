@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
-import { Paper, Typography, CircularProgress, TextField, Snackbar, Alert, Skeleton } from "@mui/material";
+import { Paper, Typography, TextField, Snackbar, Alert, Skeleton } from "@mui/material";
 import { getCharacters } from "../services/characterService";
 import type { Character } from "../services/characterService";
-import { useAuth } from "../contexts/authContext";
+
+function CharacterSkeleton() {
+  return(
+    <Paper
+      elevation={3}
+      className="p-4 flex flex-col items-center text-center"
+    >
+      <Skeleton variant="circular" width={128} height={128} />
+      <Skeleton variant="text" width="60%" height={32} />
+      <Skeleton variant="text" width="80%" />
+    </Paper>
+  );
+
+}
 
 function Characters() {
-  const { token } = useAuth();
 
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,17 +38,12 @@ function Characters() {
 
   useEffect(() => {
     async function fetchCharacters() {
-      if (!token) {
-        setError("Usuário não autenticado");
-        setLoading(false);
-        return;
-      }
 
       try {
         if (initialLoad) {
         setLoading(true);
         }
-        const data = await getCharacters(token, debouncedSearch);
+        const data = await getCharacters(debouncedSearch);
         setCharacters(data);
         setError(null);
 
@@ -45,34 +52,23 @@ function Characters() {
         }
       } catch (err) {
         if (err instanceof Error) {
-          setError("Servidor indisponível. Tente novamente mais tarde.");
+          setError(err.message);
         } else {
           setError("Erro ao buscar personagens");
         }
         setSnackbarOpen(true);
 
       } finally {
+        if(initialLoad) {
         setLoading(false);
+        }
       }
     }
 
     fetchCharacters();
-  }, [token, debouncedSearch]);
+  }, [debouncedSearch]);
 
 
-  function CharacterSkeleton() {
-    return(
-      <Paper
-        elevation={3}
-        className="p-4 flex flex-col items-center text-center"
-      >
-        <Skeleton variant="circular" width={128} height={128} />
-        <Skeleton variant="text" width="60%" height={32} />
-        <Skeleton variant="text" width="80%" />
-      </Paper>
-    );
-
-  }
 
   return (
 

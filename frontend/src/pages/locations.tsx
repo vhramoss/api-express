@@ -6,27 +6,10 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { useAuth } from "../contexts/authContext";
 import { getLocations } from "../services/locationService";
 import type { Location } from "../services/locationService";
 
-/**
- * Página Locations
- *
- * Responsabilidade:
- * - Buscar locations da API
- * - Exibir lista
- * - Tratar loading (Skeleton)
- * - Tratar erro (Snackbar)
- *
- * Não faz:
- * - Navegação
- * - Autenticação
- * - Lógica de permissão
- */
 function Locations() {
-  const { token } = useAuth();
-
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,11 +19,9 @@ function Locations() {
 
   useEffect(() => {
     async function fetchLocations() {
-      if (!token) return;
-
       try {
         setLoading(true);
-        const data = await getLocations(token);
+        const data = await getLocations();
         setLocations(data);
         setError(null);
       } catch (err) {
@@ -50,7 +31,6 @@ function Locations() {
           setError("Erro ao buscar locations");
         }
 
-        // ✅ erro como feedback, sem quebrar layout
         setSnackbarOpen(true);
       } finally {
         setLoading(false);
@@ -58,7 +38,7 @@ function Locations() {
     }
 
     fetchLocations();
-  }, [token]);
+  }, []);
 
   return (
     <div className="p-6">
@@ -66,11 +46,9 @@ function Locations() {
         Locations
       </Typography>
 
-      {/* ✅ Grid mantém layout estável */}
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading
-          ? // ✅ Skeleton apenas no primeiro load
-            Array.from({ length: 8 }).map((_, index) => (
+          ? Array.from({ length: 8 }).map((_, index) => (
               <Paper
                 key={index}
                 elevation={3}
@@ -108,7 +86,6 @@ function Locations() {
             ))}
       </div>
 
-      {/* ✅ Snackbar para erro */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={4000}
