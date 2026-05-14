@@ -1,13 +1,14 @@
 import { Character } from "../types/character";
 
-export interface CharacterProvider {
-  getRandom(count: number): Promise<Character[]>;
-  search(filter: CharacterFilter): Promise<Character[]>;
-}
 
 export interface CharacterFilter {
   name?: string;
   status?: "alive" | "dead" | "unknown";
   species?: string;
   type?: string;
+}
+
+export interface CharacterProvider {
+  search(filter: CharacterFilter): Promise<Character[]>;
+  getRandom(count: number): Promise<Character[]>;
 }

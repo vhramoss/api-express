@@ -1,6 +1,7 @@
 import { Location } from "../types/location";
 
 export interface LocationProvider {
+  getAll(): Promise<Location[]>;
   search(filter: LocationFilter): Promise<Location[]>;
 }
 
