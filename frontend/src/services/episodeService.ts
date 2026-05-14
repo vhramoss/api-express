@@ -1,12 +1,7 @@
 import { API_URL } from "../config/api";
+import { Episode } from "../models/episode.model";
 
 const CHARACTERS_URL = `${API_URL}/episodes`;
-
-export interface Episode {
-  id: number;
-  name: string;
-  episode: string;
-}
 
 export async function getEpisodes(): Promise<Episode[]> {
   const response = await fetch(CHARACTERS_URL, {

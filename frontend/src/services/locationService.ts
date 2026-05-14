@@ -2,12 +2,7 @@ import { API_URL } from "../config/api";
 
 const CHARACTERS_URL = `${API_URL}/locations`;
 
-export interface Location {
-  id: number;
-  name: string;
-  type: string;
-  dimension: string;
-}
+import { Location } from "../models/location.model";
 
 export async function getLocations(): Promise<Location[]> {
   const response = await fetch(CHARACTERS_URL, {

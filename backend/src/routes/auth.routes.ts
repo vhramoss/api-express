@@ -46,7 +46,7 @@ router.post("/login", (req: Request, res: Response) => {
   return res.status(200).json({ success: true });
 });
 
-router.post("/logout", (req: Request, res: Response) => {
+router.post("/logout", (res: Response) => {
   res.clearCookie("access_token", {
     httpOnly: true,
     sameSite: "lax",

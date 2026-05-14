@@ -8,6 +8,19 @@ const provider = new RickMortyCharacterProvider();
 const service = new CharactersService(provider);
 
 charactersRoutes.get(
+  '/',
+  async (req: Request, res: Response) => {
+    try {
+      const characters = await service.search({});
+      return res.status(200).json(characters);
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Error fetching characters'
+      });
+    }
+  }
+);
+charactersRoutes.get(
   '/random',
   async (req: Request, res: Response) => {
     try {

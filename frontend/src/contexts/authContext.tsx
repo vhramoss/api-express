@@ -5,11 +5,7 @@ import {
   ReactNode,
   useEffect,
 } from "react";
-import {
-  login as loginService,
-  logout as logoutService,
-  me as meService,
-} from "../services/authService";
+import { logout, me } from "../services/authService";
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -31,11 +27,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     useState(false);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
     async function checkSession() {
       try {
-        await meService(); // chama /auth/me
+        await me();
         setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);
@@ -48,12 +43,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   function login() {
-
     setIsAuthenticated(true);
   }
 
-  function logout() {
-    logoutService(); 
+  function handleLogout() {
+    logout();
     setIsAuthenticated(false);
   }
 
@@ -63,7 +57,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated,
         loading,
         login,
-        logout,
+        logout: handleLogout,
       }}
     >
       {children}

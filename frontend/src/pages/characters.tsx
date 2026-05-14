@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
-import { Paper, Typography, TextField, Snackbar, Alert, Skeleton } from "@mui/material";
-import { getCharacters } from "../services/characterService";
-import type { Character } from "../services/characterService";
+import {
+  Paper,
+  Typography,
+  TextField,
+  Snackbar,
+  Alert,
+  Skeleton,
+  Button,
+} from "@mui/material";
+import {
+  getCharacters,
+  getRandomCharacters,
+} from "../services/characterService";
+import { Character } from "../models/character.model";
 
 function CharacterSkeleton() {
-  return(
+  return (
     <Paper
       elevation={3}
       className="p-4 flex flex-col items-center text-center"
@@ -14,11 +25,9 @@ function CharacterSkeleton() {
       <Skeleton variant="text" width="80%" />
     </Paper>
   );
-
 }
 
 function Characters() {
-
   const [characters, setCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +36,7 @@ function Characters() {
   const [initialLoad, setInitialLoad] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(search);
@@ -36,13 +45,14 @@ function Characters() {
     return () => clearTimeout(timeout);
   }, [search]);
 
+
   useEffect(() => {
     async function fetchCharacters() {
-
       try {
         if (initialLoad) {
-        setLoading(true);
+          setLoading(true);
         }
+
         const data = await getCharacters(debouncedSearch);
         setCharacters(data);
         setError(null);
@@ -51,16 +61,15 @@ function Characters() {
           setInitialLoad(false);
         }
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Erro ao buscar personagens");
-        }
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao buscar personagens"
+        );
         setSnackbarOpen(true);
-
       } finally {
-        if(initialLoad) {
-        setLoading(false);
+        if (initialLoad) {
+          setLoading(false);
         }
       }
     }
@@ -69,17 +78,44 @@ function Characters() {
   }, [debouncedSearch]);
 
 
+  async function handleRandom() {
+    try {
+      setLoading(true);
+      const data = await getRandomCharacters();
+      setCharacters(data);
+      setSearch(""); 
+      setError(null);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Erro ao buscar personagens aleatórios"
+      );
+      setSnackbarOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-
     <div className="p-6">
-      <TextField
-        label="Buscar personagem"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        fullWidth
-        className="mb-6"
-      />
+
+      <div className="flex gap-2 mb-6">
+        <TextField
+          label="Buscar personagem"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          fullWidth
+        />
+
+        <Button
+          variant="outlined"
+          onClick={handleRandom}
+          disabled={loading}
+        >
+          Random
+        </Button>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading
@@ -108,16 +144,20 @@ function Characters() {
             ))}
       </div>
 
-      <Snackbar 
-      open={snackbarOpen}
-      autoHideDuration={4000}
-      onClose={() => setSnackbarOpen(false)}
-      anchorOrigin={{vertical: "bottom", horizontal: "center"}}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
       >
         <Alert
-        severity="error"
-        variant="filled"
-        onClose={() => setSnackbarOpen(false)}
+          severity="error"
+          variant="filled"
+          onClose={() => setSnackbarOpen(false)}
         >
           {error}
         </Alert>

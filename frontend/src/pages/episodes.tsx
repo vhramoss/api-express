@@ -7,7 +7,7 @@ import {
   Alert,
 } from "@mui/material";
 import { getEpisodes } from "../services/episodeService";
-import type { Episode } from "../services/episodeService";
+import { Episode } from "../models/episode.model";
 
 function Episodes() {
 

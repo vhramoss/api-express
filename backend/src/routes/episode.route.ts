@@ -8,6 +8,19 @@ const episodeRoutes = Router();
 const provider = new RickMortyEpisodeProvider();
 const service = new EpisodesService(provider);
 
+episodeRoutes.get(
+  "/",
+  async (req: Request, res: Response) => {
+    try {
+      const episodes = await service.search({}); // sem filtro
+      return res.status(200).json(episodes);
+    } catch {
+      return res.status(500).json({
+        message: "Error fetching episodes"
+      });
+    }
+  }
+);
 
 episodeRoutes.get(
   "/search",

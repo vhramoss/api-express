@@ -7,7 +7,7 @@ import {
   Alert,
 } from "@mui/material";
 import { getLocations } from "../services/locationService";
-import type { Location } from "../services/locationService";
+import { Location } from "../models/location.model";
 
 function Locations() {
   const [locations, setLocations] = useState<Location[]>([]);
