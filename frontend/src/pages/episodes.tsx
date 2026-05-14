@@ -10,7 +10,6 @@ import { getEpisodes } from "../services/episodeService";
 import { Episode } from "../models/episode.model";
 
 function Episodes() {
-
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,17 +19,16 @@ function Episodes() {
     async function fetchEpisodes() {
       try {
         setLoading(true);
+
         const data = await getEpisodes();
         setEpisodes(data);
         setError(null);
       } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Erro ao buscar episódios");
-        }
-
-
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Erro ao buscar episódios"
+        );
         setSnackbarOpen(true);
       } finally {
         setLoading(false);
@@ -45,7 +43,6 @@ function Episodes() {
       <Typography variant="h5" className="mb-6">
         Episodes
       </Typography>
-
 
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading

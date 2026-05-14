@@ -33,7 +33,6 @@ function Characters() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-  const [initialLoad, setInitialLoad] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
 
@@ -49,17 +48,11 @@ function Characters() {
   useEffect(() => {
     async function fetchCharacters() {
       try {
-        if (initialLoad) {
-          setLoading(true);
-        }
+        setLoading(true);
 
         const data = await getCharacters(debouncedSearch);
         setCharacters(data);
         setError(null);
-
-        if (initialLoad) {
-          setInitialLoad(false);
-        }
       } catch (err) {
         setError(
           err instanceof Error
@@ -68,9 +61,7 @@ function Characters() {
         );
         setSnackbarOpen(true);
       } finally {
-        if (initialLoad) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }
 
@@ -99,7 +90,6 @@ function Characters() {
 
   return (
     <div className="p-6">
-
       <div className="flex gap-2 mb-6">
         <TextField
           label="Buscar personagem"
@@ -117,30 +107,35 @@ function Characters() {
         </Button>
       </div>
 
+
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {loading
           ? Array.from({ length: 8 }).map((_, index) => (
               <CharacterSkeleton key={index} />
             ))
           : characters.map((character) => (
-              <Paper
-                key={character.id}
-                elevation={3}
-                className="p-4 flex flex-col items-center text-center"
-              >
-                {character.image}
-
-                <Typography variant="h6">
-                  {character.name}
-                </Typography>
-
-                <Typography
-                  variant="body2"
-                  className="text-gray-500"
+                <Paper
+                  key={character.id}
+                  elevation={3}
+                  className="p-4 flex flex-col items-center text-center"
                 >
-                  {character.species} — {character.status}
-                </Typography>
-              </Paper>
+                  <img
+                    src={character.image}
+                    alt={character.name}
+                    className="w-32 h-32 rounded-full mb-2"
+                  />
+
+                  <Typography variant="h6">
+                    {character.name}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    className="text-gray-500"
+                  >
+                    {character.species} — {character.status}
+                  </Typography>
+                </Paper>
             ))}
       </div>
 
