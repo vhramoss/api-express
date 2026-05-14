@@ -1,42 +1,43 @@
-const API_URL = "http://localhost:3000"
 import { LoginPayload } from "../models/loginPayload.model";
-export async function login(
-  payload: LoginPayload
-): Promise<void> {
+import { getApiUrl } from "../config/api";
+
+const API_URL = getApiUrl()
+export async function login(payload: LoginPayload): Promise<void> {
   let response: Response;
 
   try {
     response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json", 
+        "Content-Type": "application/json",
       },
-      credentials: "include",               
+      credentials: "include",
       body: JSON.stringify(payload),
     });
   } catch {
-    throw new Error(
-      "Servidor indisponível. Tente novamente mais tarde."
-    );
+    throw new Error("Servidor indisponível. Tente novamente mais tarde.");
   }
 
-  const text = await response.text();
-  let data: any;
-
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error("Resposta inválida do servidor");
-  }
-
-  if (response.status === 401) {
-    throw new Error("Email ou senha incorretos");
-  }
 
   if (!response.ok) {
-    throw new Error(
-      data.message || "Erro ao realizar login"
-    );
+    if (response.status === 401) {
+      throw new Error("Email ou senha incorretos");
+    }
+    throw new Error("Erro ao realizar login");
+  }
+
+
+  const text = await response.text();
+
+
+  if (!text) {
+    return;
+  }
+
+  try {
+    JSON.parse(text);
+  } catch {
+    throw new Error("Resposta inválida do servidor");
   }
 }
 
@@ -57,4 +58,6 @@ export async function me(): Promise<void> {
   if (!response.ok) {
     throw new Error("Sessão inválida");
   }
+
+  await response.text();
 }

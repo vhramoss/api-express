@@ -1,7 +1,9 @@
-import { API_URL } from "../config/api";
+import { getApiUrl } from "../config/api";
 import { Character } from "../models/character.model";
 
+const API_URL = getApiUrl()
 const CHARACTERS_URL = `${API_URL}/characters`;
+
 
 export async function getCharacters(
   name?: string
@@ -13,6 +15,15 @@ export async function getCharacters(
   const response = await fetch(url, {
     credentials: "include",
   });
+
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Não autorizado");
+    }
+    throw new Error("Erro ao buscar personagens");
+  }
+
 
   const text = await response.text();
 
@@ -27,13 +38,6 @@ export async function getCharacters(
     throw new Error("Resposta inválida do servidor");
   }
 
-  if (response.status === 401) {
-    throw new Error("Não autorizado");
-  }
-
-  if (!response.ok) {
-    throw new Error("Erro ao buscar personagens");
-  }
 
   if (Array.isArray(data)) {
     return data;
@@ -56,6 +60,15 @@ export async function getRandomCharacters(): Promise<Character[]> {
     credentials: "include",
   });
 
+ 
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error("Não autorizado");
+    }
+    throw new Error("Erro ao buscar personagens aleatórios");
+  }
+
+ 
   const text = await response.text();
 
   if (!text) {
@@ -67,14 +80,6 @@ export async function getRandomCharacters(): Promise<Character[]> {
     data = JSON.parse(text);
   } catch {
     throw new Error("Resposta inválida do servidor");
-  }
-
-  if (response.status === 401) {
-    throw new Error("Não autorizado");
-  }
-
-  if (!response.ok) {
-    throw new Error("Erro ao buscar personagens aleatórios");
   }
 
   if (
