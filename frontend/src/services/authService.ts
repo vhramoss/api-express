@@ -1,11 +1,5 @@
 const API_URL = "http://localhost:3000"
-
-interface LoginPayload {
-  email: string;
-  password: string;
-}
-
-// ✅ LOGIN (cookie)
+import { LoginPayload } from "../models/loginPayload.model";
 export async function login(
   payload: LoginPayload
 ): Promise<void> {
